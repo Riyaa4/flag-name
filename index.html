@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flag Master - Learn World Flags</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icon Components
+        const Flag = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+            </svg>
+        );
+
+        const Trophy = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+            </svg>
+        );
+
+        const RotateCcw = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                <path d="M3 3v5h5"></path>
+            </svg>
+        );
+
+        const Play = (props) => (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+        );
+
+        const countries = [
+          { name: 'Afghanistan', flag: '🇦🇫', code: 'AF' },
+          { name: 'Albania', flag: '🇦🇱', code: 'AL' },
+          { name: 'Algeria', flag: '🇩🇿', code: 'DZ' },
+          { name: 'Andorra', flag: '🇦🇩', code: 'AD' },
+          { name: 'Angola', flag: '🇦🇴', code: 'AO' },
+          { name: 'Antigua and Barbuda', flag: '🇦🇬', code: 'AG' },
+          { name: 'Argentina', flag: '🇦🇷', code: 'AR' },
+          { name: 'Armenia', flag: '🇦🇲', code: 'AM' },
+          { name: 'Australia', flag: '🇦🇺', code: 'AU' },
+          { name: 'Austria', flag: '🇦🇹', code: 'AT' },
+          { name: 'Azerbaijan', flag: '🇦🇿', code: 'AZ' },
+          { name: 'Bahamas', flag: '🇧🇸', code: 'BS' },
+          { name: 'Bahrain', flag: '🇧🇭', code: 'BH' },
+          { name: 'Bangladesh', flag: '🇧🇩', code: 'BD' },
+          { name: 'Barbados', flag: '🇧🇧', code: 'BB' },
+          { name: 'Belarus', flag: '🇧🇾', code: 'BY' },
+          { name: 'Belgium', flag: '🇧🇪', code: 'BE' },
+          { name: 'Belize', flag: '🇧🇿', code: 'BZ' },
+          { name: 'Benin', flag: '🇧🇯', code: 'BJ' },
+          { name: 'Bhutan', flag: '🇧🇹', code: 'BT' },
+          { name: 'Bolivia', flag: '🇧🇴', code: 'BO' },
+          { name: 'Bosnia and Herzegovina', flag: '🇧🇦', code: 'BA' },
+          { name: 'Botswana', flag: '🇧🇼', code: 'BW' },
+          { name: 'Brazil', flag: '🇧🇷', code: 'BR' },
+          { name: 'Brunei', flag: '🇧🇳', code: 'BN' },
+          { name: 'Bulgaria', flag: '🇧🇬', code: 'BG' },
+          { name: 'Burkina Faso', flag: '🇧🇫', code: 'BF' },
+          { name: 'Burundi', flag: '🇧🇮', code: 'BI' },
+          { name: 'Cambodia', flag: '🇰🇭', code: 'KH' },
+          { name: 'Cameroon', flag: '🇨🇲', code: 'CM' },
+          { name: 'Canada', flag: '🇨🇦', code: 'CA' },
+          { name: 'Cape Verde', flag: '🇨🇻', code: 'CV' },
+          { name: 'Central African Republic', flag: '🇨🇫', code: 'CF' },
+          { name: 'Chad', flag: '🇹🇩', code: 'TD' },
+          { name: 'Chile', flag: '🇨🇱', code: 'CL' },
+          { name: 'China', flag: '🇨🇳', code: 'CN' },
+          { name: 'Colombia', flag: '🇨🇴', code: 'CO' },
+          { name: 'Comoros', flag: '🇰🇲', code: 'KM' },
+          { name: 'Congo', flag: '🇨🇬', code: 'CG' },
+          { name: 'Costa Rica', flag: '🇨🇷', code: 'CR' },
+          { name: 'Croatia', flag: '🇭🇷', code: 'HR' },
+          { name: 'Cuba', flag: '🇨🇺', code: 'CU' },
+          { name: 'Cyprus', flag: '🇨🇾', code: 'CY' },
+          { name: 'Czech Republic', flag: '🇨🇿', code: 'CZ' },
+          { name: 'Denmark', flag: '🇩🇰', code: 'DK' },
+          { name: 'Djibouti', flag: '🇩🇯', code: 'DJ' },
+          { name: 'Dominica', flag: '🇩🇲', code: 'DM' },
+          { name: 'Dominican Republic', flag: '🇩🇴', code: 'DO' },
+          { name: 'DR Congo', flag: '🇨🇩', code: 'CD' },
+          { name: 'East Timor', flag: '🇹🇱', code: 'TL' },
+          { name: 'Ecuador', flag: '🇪🇨', code: 'EC' },
+          { name: 'Egypt', flag: '🇪🇬', code: 'EG' },
+          { name: 'El Salvador', flag: '🇸🇻', code: 'SV' },
+          { name: 'Equatorial Guinea', flag: '🇬🇶', code: 'GQ' },
+          { name: 'Eritrea', flag: '🇪🇷', code: 'ER' },
+          { name: 'Estonia', flag: '🇪🇪', code: 'EE' },
+          { name: 'Eswatini', flag: '🇸🇿', code: 'SZ' },
+          { name: 'Ethiopia', flag: '🇪🇹', code: 'ET' },
+          { name: 'Fiji', flag: '🇫🇯', code: 'FJ' },
+          { name: 'Finland', flag: '🇫🇮', code: 'FI' },
+          { name: 'France', flag: '🇫🇷', code: 'FR' },
+          { name: 'Gabon', flag: '🇬🇦', code: 'GA' },
+          { name: 'Gambia', flag: '🇬🇲', code: 'GM' },
+          { name: 'Georgia', flag: '🇬🇪', code: 'GE' },
+          { name: 'Germany', flag: '🇩🇪', code: 'DE' },
+          { name: 'Ghana', flag: '🇬🇭', code: 'GH' },
+          { name: 'Greece', flag: '🇬🇷', code: 'GR' },
+          { name: 'Grenada', flag: '🇬🇩', code: 'GD' },
+          { name: 'Guatemala', flag: '🇬🇹', code: 'GT' },
+          { name: 'Guinea', flag: '🇬🇳', code: 'GN' },
+          { name: 'Guinea-Bissau', flag: '🇬🇼', code: 'GW' },
+          { name: 'Guyana', flag: '🇬🇾', code: 'GY' },
+          { name: 'Haiti', flag: '🇭🇹', code: 'HT' },
+          { name: 'Honduras', flag: '🇭🇳', code: 'HN' },
+          { name: 'Hungary', flag: '🇭🇺', code: 'HU' },
+          { name: 'Iceland', flag: '🇮🇸', code: 'IS' },
+          { name: 'India', flag: '🇮🇳', code: 'IN' },
+          { name: 'Indonesia', flag: '🇮🇩', code: 'ID' },
+          { name: 'Iran', flag: '🇮🇷', code: 'IR' },
+          { name: 'Iraq', flag: '🇮🇶', code: 'IQ' },
+          { name: 'Ireland', flag: '🇮🇪', code: 'IE' },
+          { name: 'Israel', flag: '🇮🇱', code: 'IL' },
+          { name: 'Italy', flag: '🇮🇹', code: 'IT' },
+          { name: 'Ivory Coast', flag: '🇨🇮', code: 'CI' },
+          { name: 'Jamaica', flag: '🇯🇲', code: 'JM' },
+          { name: 'Japan', flag: '🇯🇵', code: 'JP' },
+          { name: 'Jordan', flag: '🇯🇴', code: 'JO' },
+          { name: 'Kazakhstan', flag: '🇰🇿', code: 'KZ' },
+          { name: 'Kenya', flag: '🇰🇪', code: 'KE' },
+          { name: 'Kiribati', flag: '🇰🇮', code: 'KI' },
+          { name: 'Kosovo', flag: '🇽🇰', code: 'XK' },
+          { name: 'Kuwait', flag: '🇰🇼', code: 'KW' },
+          { name: 'Kyrgyzstan', flag: '🇰🇬', code: 'KG' },
+          { name: 'Laos', flag: '🇱🇦', code: 'LA' },
+          { name: 'Latvia', flag: '🇱🇻', code: 'LV' },
+          { name: 'Lebanon', flag: '🇱🇧', code: 'LB' },
+          { name: 'Lesotho', flag: '🇱🇸', code: 'LS' },
+          { name: 'Liberia', flag: '🇱🇷', code: 'LR' },
+          { name: 'Libya', flag: '🇱🇾', code: 'LY' },
+          { name: 'Liechtenstein', flag: '🇱🇮', code: 'LI' },
+          { name: 'Lithuania', flag: '🇱🇹', code: 'LT' },
+          { name: 'Luxembourg', flag: '🇱🇺', code: 'LU' },
+          { name: 'Madagascar', flag: '🇲🇬', code: 'MG' },
+          { name: 'Malawi', flag: '🇲🇼', code: 'MW' },
+          { name: 'Malaysia', flag: '🇲🇾', code: 'MY' },
+          { name: 'Maldives', flag: '🇲🇻', code: 'MV' },
+          { name: 'Mali', flag: '🇲🇱', code: 'ML' },
+          { name: 'Malta', flag: '🇲🇹', code: 'MT' },
+          { name: 'Marshall Islands', flag: '🇲🇭', code: 'MH' },
+          { name: 'Mauritania', flag: '🇲🇷', code: 'MR' },
+          { name: 'Mauritius', flag: '🇲🇺', code: 'MU' },
+          { name: 'Mexico', flag: '🇲🇽', code: 'MX' },
+          { name: 'Micronesia', flag: '🇫🇲', code: 'FM' },
+          { name: 'Moldova', flag: '🇲🇩', code: 'MD' },
+          { name: 'Monaco', flag: '🇲🇨', code: 'MC' },
+          { name: 'Mongolia', flag: '🇲🇳', code: 'MN' },
+          { name: 'Montenegro', flag: '🇲🇪', code: 'ME' },
+          { name: 'Morocco', flag: '🇲🇦', code: 'MA' },
+          { name: 'Mozambique', flag: '🇲🇿', code: 'MZ' },
+          { name: 'Myanmar', flag: '🇲🇲', code: 'MM' },
+          { name: 'Namibia', flag: '🇳🇦', code: 'NA' },
+          { name: 'Nauru', flag: '🇳🇷', code: 'NR' },
+          { name: 'Nepal', flag: '🇳🇵', code: 'NP' },
+          { name: 'Netherlands', flag: '🇳🇱', code: 'NL' },
+          { name: 'New Zealand', flag: '🇳🇿', code: 'NZ' },
+          { name: 'Nicaragua', flag: '🇳🇮', code: 'NI' },
+          { name: 'Niger', flag: '🇳🇪', code: 'NE' },
+          { name: 'Nigeria', flag: '🇳🇬', code: 'NG' },
+          { name: 'North Korea', flag: '🇰🇵', code: 'KP' },
+          { name: 'North Macedonia', flag: '🇲🇰', code: 'MK' },
+          { name: 'Norway', flag: '🇳🇴', code: 'NO' },
+          { name: 'Oman', flag: '🇴🇲', code: 'OM' },
+          { name: 'Pakistan', flag: '🇵🇰', code: 'PK' },
+          { name: 'Palau', flag: '🇵🇼', code: 'PW' },
+          { name: 'Palestine', flag: '🇵🇸', code: 'PS' },
+          { name: 'Panama', flag: '🇵🇦', code: 'PA' },
+          { name: 'Papua New Guinea', flag: '🇵🇬', code: 'PG' },
+          { name: 'Paraguay', flag: '🇵🇾', code: 'PY' },
+          { name: 'Peru', flag: '🇵🇪', code: 'PE' },
+          { name: 'Philippines', flag: '🇵🇭', code: 'PH' },
+          { name: 'Poland', flag: '🇵🇱', code: 'PL' },
+          { name: 'Portugal', flag: '🇵🇹', code: 'PT' },
+          { name: 'Qatar', flag: '🇶🇦', code: 'QA' },
+          { name: 'Romania', flag: '🇷🇴', code: 'RO' },
+          { name: 'Russia', flag: '🇷🇺', code: 'RU' },
+          { name: 'Rwanda', flag: '🇷🇼', code: 'RW' },
+          { name: 'Saint Kitts and Nevis', flag: '🇰🇳', code: 'KN' },
+          { name: 'Saint Lucia', flag: '🇱🇨', code: 'LC' },
+          { name: 'Saint Vincent and the Grenadines', flag: '🇻🇨', code: 'VC' },
+          { name: 'Samoa', flag: '🇼🇸', code: 'WS' },
+          { name: 'San Marino', flag: '🇸🇲', code: 'SM' },
+          { name: 'Sao Tome and Principe', flag: '🇸🇹', code: 'ST' },
+          { name: 'Saudi Arabia', flag: '🇸🇦', code: 'SA' },
+          { name: 'Senegal', flag: '🇸🇳', code: 'SN' },
+          { name: 'Serbia', flag: '🇷🇸', code: 'RS' },
+          { name: 'Seychelles', flag: '🇸🇨', code: 'SC' },
+          { name: 'Sierra Leone', flag: '🇸🇱', code: 'SL' },
+          { name: 'Singapore', flag: '🇸🇬', code: 'SG' },
+          { name: 'Slovakia', flag: '🇸🇰', code: 'SK' },
+          { name: 'Slovenia', flag: '🇸🇮', code: 'SI' },
+          { name: 'Solomon Islands', flag: '🇸🇧', code: 'SB' },
+          { name: 'Somalia', flag: '🇸🇴', code: 'SO' },
+          { name: 'South Africa', flag: '🇿🇦', code: 'ZA' },
+          { name: 'South Korea', flag: '🇰🇷', code: 'KR' },
+          { name: 'South Sudan', flag: '🇸🇸', code: 'SS' },
+          { name: 'Spain', flag: '🇪🇸', code: 'ES' },
+          { name: 'Sri Lanka', flag: '🇱🇰', code: 'LK' },
+          { name: 'Sudan', flag: '🇸🇩', code: 'SD' },
+          { name: 'Suriname', flag: '🇸🇷', code: 'SR' },
+          { name: 'Sweden', flag: '🇸🇪', code: 'SE' },
+          { name: 'Switzerland', flag: '🇨🇭', code: 'CH' },
+          { name: 'Syria', flag: '🇸🇾', code: 'SY' },
+          { name: 'Taiwan', flag: '🇹🇼', code: 'TW' },
+          { name: 'Tajikistan', flag: '🇹🇯', code: 'TJ' },
+          { name: 'Tanzania', flag: '🇹🇿', code: 'TZ' },
+          { name: 'Thailand', flag: '🇹🇭', code: 'TH' },
+          { name: 'Togo', flag: '🇹🇬', code: 'TG' },
+          { name: 'Tonga', flag: '🇹🇴', code: 'TO' },
+          { name: 'Trinidad and Tobago', flag: '🇹🇹', code: 'TT' },
+          { name: 'Tunisia', flag: '🇹🇳', code: 'TN' },
+          { name: 'Turkey', flag: '🇹🇷', code: 'TR' },
+          { name: 'Turkmenistan', flag: '🇹🇲', code: 'TM' },
+          { name: 'Tuvalu', flag: '🇹🇻', code: 'TV' },
+          { name: 'Uganda', flag: '🇺🇬', code: 'UG' },
+          { name: 'Ukraine', flag: '🇺🇦', code: 'UA' },
+          { name: 'United Arab Emirates', flag: '🇦🇪', code: 'AE' },
+          { name: 'United Kingdom', flag: '🇬🇧', code: 'GB' },
+          { name: 'United States', flag: '🇺🇸', code: 'US' },
+          { name: 'Uruguay', flag: '🇺🇾', code: 'UY' },
+          { name: 'Uzbekistan', flag: '🇺🇿', code: 'UZ' },
+          { name: 'Vanuatu', flag: '🇻🇺', code: 'VU' },
+          { name: 'Vatican City', flag: '🇻🇦', code: 'VA' },
+          { name: 'Venezuela', flag: '🇻🇪', code: 'VE' },
+          { name: 'Vietnam', flag: '🇻🇳', code: 'VN' },
+          { name: 'Yemen', flag: '🇾🇪', code: 'YE' },
+          { name: 'Zambia', flag: '🇿🇲', code: 'ZM' },
+          { name: 'Zimbabwe', flag: '🇿🇼', code: 'ZW' },
+        ];
+
+        function FlagGame() {
+          const [gameState, setGameState] = useState('menu');
+          const [currentQuestion, setCurrentQuestion] = useState(null);
+          const [options, setOptions] = useState([]);
+          const [score, setScore] = useState(0);
+          const [questionsAnswered, setQuestionsAnswered] = useState(0);
+          const [feedback, setFeedback] = useState(null);
+          const [streak, setStreak] = useState(0);
+          const [highScore, setHighScore] = useState(0);
+
+          const totalQuestions = 10;
+
+          useEffect(() => {
+            if (gameState === 'playing' && questionsAnswered < totalQuestions) {
+              generateQuestion();
+            } else if (questionsAnswered === totalQuestions) {
+              setGameState('gameOver');
+              if (score > highScore) {
+                setHighScore(score);
+              }
+            }
+          }, [gameState, questionsAnswered]);
+
+          const generateQuestion = () => {
+            const correctAnswer = countries[Math.floor(Math.random() * countries.length)];
+            const wrongAnswers = countries
+              .filter(c => c.code !== correctAnswer.code)
+              .sort(() => Math.random() - 0.5)
+              .slice(0, 3);
+            
+            const allOptions = [correctAnswer, ...wrongAnswers].sort(() => Math.random() - 0.5);
+            
+            setCurrentQuestion(correctAnswer);
+            setOptions(allOptions);
+            setFeedback(null);
+          };
+
+          const handleAnswer = (selectedCountry) => {
+            const isCorrect = selectedCountry.code === currentQuestion.code;
+            
+            if (isCorrect) {
+              setScore(score + 10);
+              setStreak(streak + 1);
+              setFeedback({ type: 'correct', message: 'Correct!' });
+            } else {
+              setStreak(0);
+              setFeedback({ 
+                type: 'wrong', 
+                message: `Wrong! That's ${selectedCountry.name}. The correct answer is ${currentQuestion.name}.` 
+              });
+            }
+
+            setTimeout(() => {
+              setQuestionsAnswered(questionsAnswered + 1);
+            }, 1500);
+          };
+
+          const startGame = () => {
+            setGameState('playing');
+            setScore(0);
+            setQuestionsAnswered(0);
+            setStreak(0);
+            setFeedback(null);
+          };
+
+          const resetGame = () => {
+            setGameState('menu');
+            setScore(0);
+            setQuestionsAnswered(0);
+            setStreak(0);
+            setFeedback(null);
+          };
+
+          if (gameState === 'menu') {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
+                  <div className="mb-8">
+                    <Flag className="w-24 h-24 mx-auto text-blue-600 mb-4" />
+                    <h1 className="text-5xl font-bold text-gray-800 mb-2">Flag Master</h1>
+                    <p className="text-gray-600 text-lg">Test your knowledge of world flags</p>
+                    <p className="text-sm text-gray-500 mt-2">{countries.length} countries</p>
+                  </div>
+                  
+                  <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                      <Trophy className="w-6 h-6 text-yellow-500" />
+                      <span className="text-gray-600">High Score</span>
+                    </div>
+                    <p className="text-4xl font-bold text-gray-800">{highScore}</p>
+                  </div>
+
+                  <button
+                    onClick={startGame}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-8 rounded-xl text-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-3"
+                  >
+                    <Play className="w-6 h-6" />
+                    Start Game
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          if (gameState === 'gameOver') {
+            return (
+              <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl shadow-2xl p-12 max-w-md w-full text-center">
+                  <Trophy className="w-24 h-24 mx-auto text-yellow-500 mb-4" />
+                  <h1 className="text-5xl font-bold text-gray-800 mb-2">Game Over!</h1>
+                  <p className="text-gray-600 text-lg mb-8">Here's how you did</p>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="bg-blue-50 rounded-2xl p-6">
+                      <p className="text-gray-600 mb-1">Your Score</p>
+                      <p className="text-5xl font-bold text-blue-600">{score}</p>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <p className="text-gray-600 text-sm mb-1">Correct</p>
+                        <p className="text-3xl font-bold text-green-600">{score / 10}</p>
+                      </div>
+                      <div className="bg-gray-50 rounded-xl p-4">
+                        <p className="text-gray-600 text-sm mb-1">Wrong</p>
+                        <p className="text-3xl font-bold text-red-600">{totalQuestions - (score / 10)}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={resetGame}
+                    className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-8 rounded-xl text-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all flex items-center justify-center gap-3"
+                  >
+                    <RotateCcw className="w-6 h-6" />
+                    Play Again
+                  </button>
+                </div>
+              </div>
+            );
+          }
+
+          return (
+            <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-500 flex items-center justify-center p-4">
+              <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-3xl w-full">
+                <div className="flex justify-between items-center mb-8">
+                  <div className="flex items-center gap-6">
+                    <div className="bg-blue-50 rounded-xl px-4 py-2">
+                      <p className="text-sm text-gray-600">Question</p>
+                      <p className="text-2xl font-bold text-blue-600">{questionsAnswered + 1}/{totalQuestions}</p>
+                    </div>
+                    <div className="bg-purple-50 rounded-xl px-4 py-2">
+                      <p className="text-sm text-gray-600">Score</p>
+                      <p className="text-2xl font-bold text-purple-600">{score}</p>
+                    </div>
+                    {streak > 0 && (
+                      <div className="bg-orange-50 rounded-xl px-4 py-2">
+                        <p className="text-sm text-gray-600">Streak</p>
+                        <p className="text-2xl font-bold text-orange-600">🔥 {streak}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="mb-8 text-center">
+                  <h2 className="text-2xl font-semibold text-gray-700 mb-6">Which country is this?</h2>
+                  <div className="bg-gray-50 rounded-2xl p-12 mb-2 inline-block">
+                    <div className="text-9xl">{currentQuestion?.flag}</div>
+                  </div>
+                </div>
+
+                {feedback && (
+                  <div className={`mb-6 p-4 rounded-xl text-center font-semibold ${
+                    feedback.type === 'correct' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {feedback.message}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-4">
+                  {options.map((country, index) => (
+                    <button
+                      key={index}
+                      onClick={() => !feedback && handleAnswer(country)}
+                      disabled={feedback !== null}
+                      className={`p-6 rounded-xl text-lg font-semibold transition-all ${
+                        feedback && country.code === currentQuestion.code
+                          ? 'bg-green-500 text-white'
+                          : feedback && country.code !== currentQuestion.code
+                          ? 'bg-gray-200 text-gray-400'
+                          : 'bg-gray-50 text-gray-800 hover:bg-blue-100 hover:shadow-md transform hover:scale-105'
+                      }`}
+                    >
+                      {country.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        ReactDOM.render(<FlagGame />, document.getElementById('root'));
+    </script>
+</body>
+</html>
